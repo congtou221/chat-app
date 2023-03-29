@@ -1,0 +1,41 @@
+{
+  // 编辑器设置
+  "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.tslint": true,
+    "source.organizeImports": true
+  },
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": true,
+    "strings": true
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // TypeScript设置
+  "typescript.format.enable": true,
+  "typescript.check.npmIsInstalled": false,
+  "typescript.referencesCodeLens.enabled": true,
+  "typescript.tsserver.log": "verbose",
+  "typescript.validate.enable": true,
+
+  // 自动保存设置
+  "files.autoSave": "onFocusChange",
+
+  // ESLint设置
+  "eslint.packageManager": "pnpm",
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+
+  // Prettier设置
+  "prettier.printWidth": 120,
+  "prettier.singleQuote": true,
+  "prettier.trailingComma": "all",
+  "prettier.arrowParens": "always",
+  "prettier.proseWrap": "always",
+  "prettier.jsxSingleQuote": true,
+
+  // GitLens设置
+  "gitlens.codeLens.authors.enabled": true
+}
+

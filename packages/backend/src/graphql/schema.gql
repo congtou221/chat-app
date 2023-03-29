@@ -1,0 +1,74 @@
+scalar DateTime
+
+type User {
+  id: ID!
+  username: String!
+  password: String
+  avatar: String!
+  groups: [Group!]!
+}
+
+type Group {
+  id: ID!
+  name: String!
+  description: String
+  owner: User!
+  members: [User!]!
+  messages: [Message!]!
+}
+
+type Message {
+  id: ID!
+  sender: User!
+  group: Group!
+  content: String!
+  sentAt: DateTime!
+  mentions: [MessageMention!]!
+  replies: [Message!]!
+}
+
+type MessageMention {
+  id: ID!
+  message: Message!
+  user: User!
+  content: String!
+}
+
+input CreateUserInput {
+  username: String!
+  password: String!
+  avatar: String!
+}
+
+input CreateGroupInput {
+  name: String!
+  description: String!
+  ownerId: ID!
+}
+
+input CreateMessageInput {
+  sender_id: ID!
+  groupId: ID!
+  content: String!
+  sentAt: DateTime!
+  mentions: [CreateMessageMentionInput]
+  replyTo: ID
+}
+
+input CreateMessageMentionInput {
+  userId: ID!
+  content: String!
+}
+
+type Mutation {
+  createUser(input: CreateUserInput!): User!
+  createGroup(input: CreateGroupInput!): Group!
+  createMessage(input: CreateMessageInput!): Message!
+}
+
+type Query {
+  user(id: ID!): User
+  group(id: ID!): Group
+  message(id: ID!): Message
+}
+
