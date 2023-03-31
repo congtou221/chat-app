@@ -1,0 +1,28 @@
+.message-container {
+  margin: 20px;
+  border: 1px solid gray;
+  background: gray;
+  padding: 5px;
+  border-radius: 5px;
+}
+.message-avatar {
+  width: 30px;
+  vertical-align: middle;
+}
+.message-context {
+  font-size: 16px;
+  background: lightblue;
+  border-radius: 2px;
+  margin: 0 12px;
+  vertical-align: middle;
+}
+.message-time {
+  font-size: 12px;
+  background: lightgray;
+  border-radius: 2px;
+}
+.message-reply {
+  background: black;
+  color: white;
+}
+
