@@ -77,14 +77,12 @@ function App() {
     },
     [updatedGroupIds],
   );
-  const createSocketConnection = (groups: GroupDocument[]) => {
-    socket.on('connect', () => {
-      console.log('Client: Socket.IO connection established');
-      // socket.send('Hello Server!');
-    });
-
+  const listenSocketMessage = (groups: GroupDocument[]) => {
     socket.on('message', (data) => {
       console.log('Client received: ' + JSON.stringify(data));
+      if (!groups || groups.length === 0) {
+        return;
+      }
       const { groupId, sender, content, mentions, replyTo } = data;
       if (sender.id !== userId) {
         if (!updatedGroupIds?.includes(groupId)) {
@@ -100,9 +98,13 @@ function App() {
           }
           return newOneGroup;
         }) || {};
-      setGroups(newGroups);
+      setGroups([...newGroups]);
     });
-
+  };
+  const listenSocketConnection = () => {
+    socket.on('connect', () => {
+      console.log('Client: Socket.IO connection established');
+    });
     socket.on('disconnect', () => {
       console.log('Client: Socket.IO connection closed');
     });
@@ -111,17 +113,20 @@ function App() {
     graphqlPost(
       { query },
       (data) => {
-        const { friends, groups, user } = data as any;
+        const { friends, groups: initGroups, user } = data as any;
         setFriends(friends);
-        setGroups(groups);
+        setGroups(initGroups);
         setUser(user);
-        createSocketConnection(groups || []);
+        listenSocketConnection();
       },
       (e) => {
         console.error(e);
       },
     );
   }, [query]);
+  useEffect(() => {
+    listenSocketMessage(groups);
+  }, [groups]);
 
   return (
     <Layout style={{ height: '100%' }}>

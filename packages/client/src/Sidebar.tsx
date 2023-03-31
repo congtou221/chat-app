@@ -56,7 +56,7 @@ const SideBar = (props: ISidebarProps) => {
     getItem(
       'Members',
       'Members',
-      <Badge count={1} dot={true}>
+      <Badge count={0} dot={true}>
         <Avatar shape='square' icon={<TeamOutlined />} />
       </Badge>,
       friends.map(({ username }, index) => getItem(username, `user${index}`, <UserOutlined />)),
