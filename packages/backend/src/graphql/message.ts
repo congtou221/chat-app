@@ -6,7 +6,7 @@ import MessageModel, { Message } from '../models/message';
 import MessageMentionModel, { MessageMention } from '../models/message_mention';
 import UserModel, { User } from '../models/user';
 
-export const getMessageObjList = async (messages: Message[]): Promise<any[]> => {
+export const getMessageObjList = async (messages: (Message & { _id: string })[]): Promise<any[]> => {
   const newMessages = messages.map(async (message) => {
     const { _id: id, content, mentions, replyTo, senderId, sentAt, groupId } = message;
     const ownerPromise: Promise<User> = new Promise((resolve) => {
