@@ -41,11 +41,11 @@ var Message = exports.Message = /** @class */ (function () {
     __decorate([
         (0, type_graphql_1.Field)(function () { return type_graphql_1.ID; }),
         __metadata("design:type", mongoose_1.Types.ObjectId)
-    ], Message.prototype, "sender_id", void 0);
+    ], Message.prototype, "senderId", void 0);
     __decorate([
         (0, type_graphql_1.Field)(function () { return type_graphql_1.ID; }),
         __metadata("design:type", mongoose_1.Types.ObjectId)
-    ], Message.prototype, "group_id", void 0);
+    ], Message.prototype, "groupId", void 0);
     __decorate([
         (0, type_graphql_1.Field)(),
         __metadata("design:type", String)
@@ -53,11 +53,15 @@ var Message = exports.Message = /** @class */ (function () {
     __decorate([
         (0, type_graphql_1.Field)(),
         __metadata("design:type", Date)
-    ], Message.prototype, "sent_at", void 0);
+    ], Message.prototype, "sentAt", void 0);
     __decorate([
         (0, type_graphql_1.Field)(function () { return type_graphql_1.ID; }, { nullable: true }),
         __metadata("design:type", mongoose_1.Types.ObjectId)
-    ], Message.prototype, "reply_to", void 0);
+    ], Message.prototype, "replyTo", void 0);
+    __decorate([
+        (0, type_graphql_1.Field)(function () { return type_graphql_1.ID; }, { nullable: true }),
+        __metadata("design:type", mongoose_1.Types.ObjectId)
+    ], Message.prototype, "mentions", void 0);
     Message = __decorate([
         (0, type_graphql_1.ObjectType)()
     ], Message);
@@ -65,10 +69,11 @@ var Message = exports.Message = /** @class */ (function () {
 }());
 var MessageSchema = new mongoose_1.Schema({
     // id: { type: Schema.Types.ObjectId, required: true, unique: true },
-    sender_id: { type: mongoose_1.Schema.Types.ObjectId, required: false, ref: 'User' },
-    group_id: { type: mongoose_1.Schema.Types.ObjectId, required: false, ref: 'Group' },
-    content: { type: String, required: true },
-    sent_at: { type: Date, default: Date.now },
-    reply_to: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Message' },
+    senderId: { type: mongoose_1.Schema.Types.ObjectId, required: false, ref: 'User' },
+    groupId: { type: mongoose_1.Schema.Types.ObjectId, required: false, ref: 'Group' },
+    content: { type: String },
+    sentAt: { type: Date, default: Date.now },
+    replyTo: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Message' },
+    mentions: { type: mongoose_1.Schema.Types.ObjectId, ref: 'MessageMention' },
 });
 exports.default = mongoose_1.default.model('Message', MessageSchema);

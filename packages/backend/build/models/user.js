@@ -50,6 +50,10 @@ var User = exports.User = /** @class */ (function () {
         (0, type_graphql_1.Field)({ nullable: true }),
         __metadata("design:type", String)
     ], User.prototype, "avatar", void 0);
+    __decorate([
+        (0, type_graphql_1.Field)(function () { return type_graphql_1.ID; }),
+        __metadata("design:type", Array)
+    ], User.prototype, "friends", void 0);
     User = __decorate([
         (0, type_graphql_1.ObjectType)()
     ], User);
@@ -60,5 +64,6 @@ var UserSchema = new mongoose_1.Schema({
     username: { type: String, required: true },
     password: { type: String, required: true },
     avatar: { type: String },
+    friends: { type: [mongoose_1.Schema.Types.ObjectId], default: [] },
 });
 exports.default = mongoose_1.default.model('User', UserSchema);

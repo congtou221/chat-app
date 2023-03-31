@@ -12,34 +12,27 @@ import mongoose from 'mongoose';
 import { Server as SocketIOServer, Socket } from 'socket.io';
 // import { buildSchemaSync } from 'type-graphql';
 import { makeExecutableSchema } from 'graphql-tools';
+import { ObjectId } from 'mongodb';
 import 'reflect-metadata';
 import app from '../app';
-import resolvers from '../graphql/message';
+import { default as resolvers, getMessageObjList } from '../graphql/message';
 import typeDefs from '../graphql/schema';
+import GroupModel from '../models/group';
+import MessageModel from '../models/message';
+import MessageMentionModel from '../models/message_mention';
 
 type Message = {
-  username: string;
-  message: string;
+  senderId: string;
+  groupId: string;
+  content?: string;
+  sentAt?: Date;
+  mentions?: string;
+  replyTo?: string;
 };
 
 interface MyError extends Error {
   status?: number;
 }
-
-// 根据 resolvers 生成 schema
-// const schema = buildSchema({
-//   resolvers: [MessageResolver],
-//   emitSchemaFile: path.resolve(__dirname, '../graphql/schema.gql'),
-// });
-
-// const typeDefs = `type Query {
-//   user: String
-// }`;
-// const resolvers = {
-//   Query: {
-//     user: () => 'Hello world!',
-//   },
-// };
 
 const schema = makeExecutableSchema({
   typeDefs,
@@ -75,7 +68,11 @@ db.once('open', () => {
   /**
    * 创建 SocketIO
    */
-  const io = new SocketIOServer(server);
+  const io = new SocketIOServer(server, {
+    cors: {
+      origin: 'http://localhost:8080',
+    },
+  });
 
   app.context.io = io;
 
@@ -87,11 +84,37 @@ db.once('open', () => {
 
     app.context.socketId = socket.id;
 
-    socket.emit('message', { username: 'Server', message: 'Welcome to the chat!' });
+    // socket.emit('message', { username: 'Server', message: 'Welcome to the chat!' });
 
-    socket.on('message', (message: Message) => {
+    socket.on('message', async (message: Message) => {
       // messages.push(message);
-      io.emit('message', message);
+      console.log('Server received: %s', message);
+
+      const { senderId, groupId, content, mentions, replyTo } = message;
+      let messageMention;
+      if (mentions && mentions?.length > 0) {
+        const mentionedUserId = mentions[0];
+        messageMention = new MessageMentionModel({
+          userId: new ObjectId(mentionedUserId),
+        });
+
+        (await messageMention.save) && messageMention.save();
+        // await messageMention.save();
+      }
+
+      const messageModel = new MessageModel({
+        senderId: new ObjectId(senderId),
+        groupId: new ObjectId(groupId),
+        content,
+        mentions: messageMention ? [messageMention._id] : undefined,
+        replyTo,
+      });
+      await messageModel.save();
+      console.log(888, messageMention, messageModel);
+      const { messages = [] } = (await GroupModel.findById(new ObjectId(groupId)).exec()) || {};
+      await GroupModel.findByIdAndUpdate(groupId, { messages: [...messages, messageModel._id] });
+
+      io.sockets.emit('message', (await getMessageObjList([messageModel]))[0]);
     });
 
     socket.on('disconnect', () => {

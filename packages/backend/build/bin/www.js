@@ -3,6 +3,29 @@
 /**
  * Module dependencies.
  */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -39,6 +62,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -50,23 +82,14 @@ var mongoose_1 = __importDefault(require("mongoose"));
 var socket_io_1 = require("socket.io");
 // import { buildSchemaSync } from 'type-graphql';
 var graphql_tools_1 = require("graphql-tools");
+var mongodb_1 = require("mongodb");
 require("reflect-metadata");
 var app_1 = __importDefault(require("../app"));
-var message_1 = __importDefault(require("../graphql/message"));
+var message_1 = __importStar(require("../graphql/message"));
 var schema_1 = __importDefault(require("../graphql/schema"));
-// 根据 resolvers 生成 schema
-// const schema = buildSchema({
-//   resolvers: [MessageResolver],
-//   emitSchemaFile: path.resolve(__dirname, '../graphql/schema.gql'),
-// });
-// const typeDefs = `type Query {
-//   user: String
-// }`;
-// const resolvers = {
-//   Query: {
-//     user: () => 'Hello world!',
-//   },
-// };
+var group_1 = __importDefault(require("../models/group"));
+var message_2 = __importDefault(require("../models/message"));
+var message_mention_1 = __importDefault(require("../models/message_mention"));
 var schema = (0, graphql_tools_1.makeExecutableSchema)({
     typeDefs: schema_1.default,
     resolvers: message_1.default,
@@ -104,18 +127,62 @@ db.once('open', function () {
     /**
      * 创建 SocketIO
      */
-    var io = new socket_io_1.Server(server);
+    var io = new socket_io_1.Server(server, {
+        cors: {
+            origin: 'http://localhost:8080',
+        },
+    });
     app_1.default.context.io = io;
     // const messages: Message[] = [];
     // 启动 socket.io 长链接
     io.on('connection', function (socket) {
         console.log('A user has connected.', socket.id);
         app_1.default.context.socketId = socket.id;
-        socket.emit('message', { username: 'Server', message: 'Welcome to the chat!' });
-        socket.on('message', function (message) {
-            // messages.push(message);
-            io.emit('message', message);
-        });
+        // socket.emit('message', { username: 'Server', message: 'Welcome to the chat!' });
+        socket.on('message', function (message) { return __awaiter(void 0, void 0, void 0, function () {
+            var senderId, groupId, content, mentions, replyTo, messageMention, mentionedUserId, messageModel, _a, messages, _b, _c, _d;
+            return __generator(this, function (_e) {
+                switch (_e.label) {
+                    case 0:
+                        // messages.push(message);
+                        console.log('Server received: %s', message);
+                        senderId = message.senderId, groupId = message.groupId, content = message.content, mentions = message.mentions, replyTo = message.replyTo;
+                        if (!(mentions && (mentions === null || mentions === void 0 ? void 0 : mentions.length) > 0)) return [3 /*break*/, 2];
+                        mentionedUserId = mentions[0];
+                        messageMention = new message_mention_1.default({
+                            userId: new mongodb_1.ObjectId(mentionedUserId),
+                        });
+                        return [4 /*yield*/, messageMention.save];
+                    case 1:
+                        (_e.sent()) && messageMention.save();
+                        _e.label = 2;
+                    case 2:
+                        messageModel = new message_2.default({
+                            senderId: new mongodb_1.ObjectId(senderId),
+                            groupId: new mongodb_1.ObjectId(groupId),
+                            content: content,
+                            mentions: messageMention ? [messageMention._id] : undefined,
+                            replyTo: replyTo,
+                        });
+                        return [4 /*yield*/, messageModel.save()];
+                    case 3:
+                        _e.sent();
+                        console.log(888, messageMention, messageModel);
+                        return [4 /*yield*/, group_1.default.findById(new mongodb_1.ObjectId(groupId)).exec()];
+                    case 4:
+                        _a = ((_e.sent()) || {}).messages, messages = _a === void 0 ? [] : _a;
+                        return [4 /*yield*/, group_1.default.findByIdAndUpdate(groupId, { messages: __spreadArray(__spreadArray([], messages, true), [messageModel._id], false) })];
+                    case 5:
+                        _e.sent();
+                        _c = (_b = io.sockets).emit;
+                        _d = ['message'];
+                        return [4 /*yield*/, (0, message_1.getMessageObjList)([messageModel])];
+                    case 6:
+                        _c.apply(_b, _d.concat([(_e.sent())[0]]));
+                        return [2 /*return*/];
+                }
+            });
+        }); });
         socket.on('disconnect', function () {
             console.log('A user has disconnected.', socket.id);
         });

@@ -4,31 +4,35 @@ const schema = buildSchema(`
   scalar DateTime
 
   type User {
+    id: String
     username: String!
     password: String
     avatar: String
     groups: [Group]
+    friends: [User]
   } 
 
   type Group {
+    id: String
     name: String!
     description: String
-    owner: User!
+    ownerId: User!
     members: [User!]!
-    messages: [Message!]!
+    messages: [Message]
+    createdAt: DateTime
   }
 
   type Message {
+    id: String
     sender: User!
     group: Group!
     content: String!
-    sentAt: DateTime!
+    sentAt: String
     mentions: [MessageMention!]!
-    replies: [Message!]!
+    replyTo: [Message!]!
   }
 
   type MessageMention {
-    message: Message!
     user: User!
     content: String!
   }
@@ -43,13 +47,15 @@ const schema = buildSchema(`
     name: String!
     description: String!
     ownerId: ID!
+    members: [ID!]!
+    messages: [ID]
   }
 
   input CreateMessageInput {
-    senderId: ID
-    groupId: ID
+    senderId: ID!
+    groupId: ID!
     content: String!
-    sentAt: DateTime!
+    sentAt: DateTime
     mentions: [CreateMessageMentionInput]
     replyTo: ID
   }
@@ -63,11 +69,14 @@ const schema = buildSchema(`
     createUser(input: CreateUserInput!): User!
     createGroup(input: CreateGroupInput!): Group!
     createMessage(input: CreateMessageInput!): Message!
+    createMessageMention(input: CreateMessageMentionInput!): MessageMention!
   }
 
   type Query {
     user(username: String): User
+    friends(username: String): [User]
     group(id: ID!): Group
+    groups(userId: ID!): [Group]
     message(id: ID!): Message
     messages(groupId: ID!): [Message]
   }

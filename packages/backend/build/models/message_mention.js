@@ -40,16 +40,12 @@ var MessageMention = exports.MessageMention = /** @class */ (function () {
     }
     __decorate([
         (0, type_graphql_1.Field)(function () { return type_graphql_1.ID; }),
-        __metadata("design:type", String)
-    ], MessageMention.prototype, "id", void 0);
+        __metadata("design:type", mongoose_1.Types.ObjectId)
+    ], MessageMention.prototype, "messageId", void 0);
     __decorate([
         (0, type_graphql_1.Field)(function () { return type_graphql_1.ID; }),
-        __metadata("design:type", String)
-    ], MessageMention.prototype, "message_id", void 0);
-    __decorate([
-        (0, type_graphql_1.Field)(function () { return type_graphql_1.ID; }),
-        __metadata("design:type", String)
-    ], MessageMention.prototype, "user_id", void 0);
+        __metadata("design:type", mongoose_1.Types.ObjectId)
+    ], MessageMention.prototype, "userId", void 0);
     __decorate([
         (0, type_graphql_1.Field)(),
         __metadata("design:type", String)
@@ -60,9 +56,9 @@ var MessageMention = exports.MessageMention = /** @class */ (function () {
     return MessageMention;
 }());
 var MessageMentionSchema = new mongoose_1.Schema({
-    id: { type: mongoose_1.Schema.Types.ObjectId, required: true, unique: true },
-    message_id: { type: mongoose_1.Schema.Types.ObjectId, required: true, ref: 'Message' },
-    user_id: { type: mongoose_1.Schema.Types.ObjectId, required: true, ref: 'User' },
+    // id: { type: Schema.Types.ObjectId, required: true, unique: true },
+    messageId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Message' },
+    userId: { type: mongoose_1.Schema.Types.ObjectId, required: true, ref: 'User' },
     content: { type: String },
 });
-exports.default = mongoose_1.default.model('MessageMention', MessageMentionSchema);
+exports.default = mongoose_1.default.model('MessageMentions', MessageMentionSchema);

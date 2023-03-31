@@ -1,5 +1,5 @@
-import mongoose, { Document, Schema } from 'mongoose';
-import { Field, ObjectType } from 'type-graphql';
+import mongoose, { Document, Schema, Types } from 'mongoose';
+import { Field, ID, ObjectType } from 'type-graphql';
 
 @ObjectType()
 export class User {
@@ -13,12 +13,15 @@ export class User {
 
   @Field({ nullable: true })
   avatar?: string;
+  @Field(() => ID)
+  friends?: Types.ObjectId[];
 }
 export interface UserDocument extends Document {
   // id: Types.ObjectId;
   username: string;
   password: string;
   avatar: string;
+  friends: Types.ObjectId[];
 }
 
 const UserSchema = new Schema<UserDocument>({
@@ -26,6 +29,7 @@ const UserSchema = new Schema<UserDocument>({
   username: { type: String, required: true },
   password: { type: String, required: true },
   avatar: { type: String },
+  friends: { type: [Schema.Types.ObjectId], default: [] },
 });
 
 export default mongoose.model<UserDocument>('User', UserSchema);

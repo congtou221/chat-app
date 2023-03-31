@@ -6,33 +6,37 @@ export class Message {
   // @Field(() => ID)
   // id!: Types.ObjectId;
   @Field(() => ID)
-  sender_id!: Types.ObjectId;
+  senderId!: Types.ObjectId;
   @Field(() => ID)
-  group_id!: Types.ObjectId;
+  groupId!: Types.ObjectId;
   @Field()
   content!: string;
   @Field()
-  sent_at!: Date;
+  sentAt!: Date;
   @Field(() => ID, { nullable: true })
-  reply_to?: Types.ObjectId;
+  replyTo?: Types.ObjectId;
+  @Field(() => ID, { nullable: true })
+  mentions?: Types.ObjectId;
 }
 
 export interface MessageDocument extends Document {
   // id: Types.ObjectId;
-  sender_id: Types.ObjectId;
-  group_id: Types.ObjectId;
+  senderId: Types.ObjectId;
+  groupId: Types.ObjectId;
   content: string;
-  sent_at: Date;
-  reply_to?: Types.ObjectId;
+  sentAt: Date;
+  replyTo?: Types.ObjectId;
+  mentions?: Types.ObjectId;
 }
 
 const MessageSchema = new Schema<MessageDocument>({
   // id: { type: Schema.Types.ObjectId, required: true, unique: true },
-  sender_id: { type: Schema.Types.ObjectId, required: false, ref: 'User' },
-  group_id: { type: Schema.Types.ObjectId, required: false, ref: 'Group' },
-  content: { type: String, required: true },
-  sent_at: { type: Date, default: Date.now },
-  reply_to: { type: Schema.Types.ObjectId, ref: 'Message' },
+  senderId: { type: Schema.Types.ObjectId, required: false, ref: 'User' },
+  groupId: { type: Schema.Types.ObjectId, required: false, ref: 'Group' },
+  content: { type: String },
+  sentAt: { type: Date, default: Date.now },
+  replyTo: { type: Schema.Types.ObjectId, ref: 'Message' },
+  mentions: { type: Schema.Types.ObjectId, ref: 'MessageMention' },
 });
 
 export default mongoose.model<MessageDocument>('Message', MessageSchema);

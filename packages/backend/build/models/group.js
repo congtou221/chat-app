@@ -39,10 +39,6 @@ var Group = exports.Group = /** @class */ (function () {
     function Group() {
     }
     __decorate([
-        (0, type_graphql_1.Field)(function () { return type_graphql_1.ID; }),
-        __metadata("design:type", String)
-    ], Group.prototype, "id", void 0);
-    __decorate([
         (0, type_graphql_1.Field)(),
         __metadata("design:type", String)
     ], Group.prototype, "name", void 0);
@@ -52,22 +48,32 @@ var Group = exports.Group = /** @class */ (function () {
     ], Group.prototype, "description", void 0);
     __decorate([
         (0, type_graphql_1.Field)(function () { return type_graphql_1.ID; }),
-        __metadata("design:type", String)
-    ], Group.prototype, "owner_id", void 0);
+        __metadata("design:type", mongoose_1.Types.ObjectId)
+    ], Group.prototype, "ownerId", void 0);
     __decorate([
         (0, type_graphql_1.Field)(),
         __metadata("design:type", Date)
-    ], Group.prototype, "created_at", void 0);
+    ], Group.prototype, "createdAt", void 0);
+    __decorate([
+        (0, type_graphql_1.Field)(function () { return type_graphql_1.ID; }),
+        __metadata("design:type", Array)
+    ], Group.prototype, "members", void 0);
+    __decorate([
+        (0, type_graphql_1.Field)(function () { return type_graphql_1.ID; }),
+        __metadata("design:type", Array)
+    ], Group.prototype, "messages", void 0);
     Group = __decorate([
         (0, type_graphql_1.ObjectType)()
     ], Group);
     return Group;
 }());
 var GroupSchema = new mongoose_1.Schema({
-    id: { type: mongoose_1.Schema.Types.ObjectId, required: true, unique: true },
+    // id: { type: Schema.Types.ObjectId, required: true, unique: true },
     name: { type: String, required: true },
     description: { type: String },
-    owner_id: { type: mongoose_1.Schema.Types.ObjectId, required: true, ref: 'User' },
-    created_at: { type: Date, default: Date.now },
+    ownerId: { type: mongoose_1.Schema.Types.ObjectId, required: true },
+    createdAt: { type: Date, default: Date.now },
+    members: { type: [mongoose_1.Schema.Types.ObjectId], default: [], required: true },
+    messages: { type: [mongoose_1.Schema.Types.ObjectId], default: [] },
 });
 exports.default = mongoose_1.default.model('Group', GroupSchema);

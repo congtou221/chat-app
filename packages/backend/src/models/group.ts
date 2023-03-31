@@ -3,8 +3,8 @@ import { Field, ID, ObjectType } from 'type-graphql';
 
 @ObjectType()
 export class Group {
-  @Field(() => ID)
-  id!: string;
+  // @Field(() => ID)
+  // id!: string;
 
   @Field()
   name!: string;
@@ -13,25 +13,33 @@ export class Group {
   description?: string;
 
   @Field(() => ID)
-  owner_id!: string;
+  ownerId!: Types.ObjectId;
 
   @Field()
-  created_at!: Date;
+  createdAt!: Date;
+  @Field(() => ID)
+  members!: Types.ObjectId[];
+  @Field(() => ID)
+  messages?: Types.ObjectId[];
 }
 export interface GroupDocument extends Document {
-  id: Types.ObjectId;
+  // id: Types.ObjectId;
   name: string;
   description: string;
-  owner_id: Types.ObjectId;
-  created_at: Date;
+  ownerId: Types.ObjectId;
+  createdAt: Date;
+  members: Types.ObjectId[];
+  messages: Types.ObjectId[];
 }
 
 const GroupSchema = new Schema<GroupDocument>({
-  id: { type: Schema.Types.ObjectId, required: true, unique: true },
+  // id: { type: Schema.Types.ObjectId, required: true, unique: true },
   name: { type: String, required: true },
   description: { type: String },
-  owner_id: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
-  created_at: { type: Date, default: Date.now },
+  ownerId: { type: Schema.Types.ObjectId, required: true },
+  createdAt: { type: Date, default: Date.now },
+  members: { type: [Schema.Types.ObjectId], default: [], required: true },
+  messages: { type: [Schema.Types.ObjectId], default: [] },
 });
 
 export default mongoose.model<GroupDocument>('Group', GroupSchema);
