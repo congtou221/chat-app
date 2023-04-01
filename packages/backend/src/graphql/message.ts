@@ -6,7 +6,10 @@ import MessageModel, { Message } from '../models/message';
 import MessageMentionModel, { MessageMention } from '../models/message_mention';
 import UserModel, { User } from '../models/user';
 
-export const getMessageObjList = async (messages: (Message & { _id: string })[]): Promise<any[]> => {
+interface IMessageModel extends Message {
+  _id: string;
+}
+export const getMessageObjList = async (messages: IMessageModel[]): Promise<any[]> => {
   const newMessages = messages.map(async (message) => {
     const { _id: id, content, mentions, replyTo, senderId, sentAt, groupId } = message;
     const ownerPromise: Promise<User> = new Promise((resolve) => {
@@ -95,10 +98,10 @@ export default {
             .exec()
             .then((v) => resolve(v as User[]));
         });
-        const messagePromise: Promise<Message[]> = new Promise((resolve) => {
+        const messagePromise: Promise<IMessageModel[]> = new Promise((resolve) => {
           MessageModel.find({ _id: { $in: messageIds } })
             .exec()
-            .then((v) => resolve(v as Message[]));
+            .then((v) => resolve(v as IMessageModel[]));
         });
 
         const [owner, matchedMembers, matchedMesssages] = await Promise.all([

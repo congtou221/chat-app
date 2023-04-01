@@ -36,7 +36,7 @@ const MessageSchema = new Schema<MessageDocument>({
   content: { type: String },
   sentAt: { type: Date, default: Date.now },
   replyTo: { type: Schema.Types.ObjectId, ref: 'Message' },
-  mentions: { type: Schema.Types.ObjectId, ref: 'MessageMention' },
+  mentions: { type: [Schema.Types.ObjectId], ref: 'MessageMention' },
 });
 
 export default mongoose.model<MessageDocument>('Message', MessageSchema);

@@ -96,10 +96,10 @@ db.once('open', () => {
         const mentionedUserId = mentions[0];
         messageMention = new MessageMentionModel({
           userId: new ObjectId(mentionedUserId),
+          content: '',
         });
 
-        (await messageMention.save) && messageMention.save();
-        // await messageMention.save();
+        await messageMention.save();
       }
 
       const messageModel = new MessageModel({
@@ -110,7 +110,7 @@ db.once('open', () => {
         replyTo,
       });
       await messageModel.save();
-      console.log(888, messageMention, messageModel);
+      // console.log(888, messageMention, messageModel);
       const { messages = [] } = (await GroupModel.findById(new ObjectId(groupId)).exec()) || {};
       await GroupModel.findByIdAndUpdate(groupId, { messages: [...messages, messageModel._id] });
 

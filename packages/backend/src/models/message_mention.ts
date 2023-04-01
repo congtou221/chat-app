@@ -29,5 +29,5 @@ const MessageMentionSchema = new Schema<MessageMentionDocument>({
   content: { type: String },
 });
 
-export default mongoose.model<MessageMentionDocument>('MessageMentions', MessageMentionSchema);
+export default mongoose.model<MessageMentionDocument>('MessageMention', MessageMentionSchema);
 
