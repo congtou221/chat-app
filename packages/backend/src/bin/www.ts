@@ -15,7 +15,7 @@ import { makeExecutableSchema } from 'graphql-tools';
 import { ObjectId } from 'mongodb';
 import 'reflect-metadata';
 import app from '../app';
-import { default as resolvers, getMessageObjList } from '../graphql/message';
+import { default as resolvers, getMessageObjList } from '../graphql/resolver';
 import typeDefs from '../graphql/schema';
 import GroupModel from '../models/group';
 import MessageModel from '../models/message';

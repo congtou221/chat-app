@@ -7,5 +7,4 @@ var group_1 = __importDefault(require("./group"));
 var message_1 = __importDefault(require("./message"));
 var message_mention_1 = __importDefault(require("./message_mention"));
 var user_1 = __importDefault(require("./user"));
-var user_group_1 = __importDefault(require("./user_group"));
-exports.default = { MessageModal: message_1.default, UserModal: user_1.default, GroupModal: group_1.default, UserGroupModal: user_group_1.default, MessageMentionModal: message_mention_1.default };
+exports.default = { MessageModal: message_1.default, UserModal: user_1.default, GroupModal: group_1.default, MessageMentionModal: message_mention_1.default };

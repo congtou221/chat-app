@@ -74,6 +74,6 @@ var MessageSchema = new mongoose_1.Schema({
     content: { type: String },
     sentAt: { type: Date, default: Date.now },
     replyTo: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Message' },
-    mentions: { type: mongoose_1.Schema.Types.ObjectId, ref: 'MessageMention' },
+    mentions: { type: [mongoose_1.Schema.Types.ObjectId], ref: 'MessageMention' },
 });
 exports.default = mongoose_1.default.model('Message', MessageSchema);

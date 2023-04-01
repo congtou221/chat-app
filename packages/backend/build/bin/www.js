@@ -85,14 +85,14 @@ var graphql_tools_1 = require("graphql-tools");
 var mongodb_1 = require("mongodb");
 require("reflect-metadata");
 var app_1 = __importDefault(require("../app"));
-var message_1 = __importStar(require("../graphql/message"));
+var resolver_1 = __importStar(require("../graphql/resolver"));
 var schema_1 = __importDefault(require("../graphql/schema"));
 var group_1 = __importDefault(require("../models/group"));
-var message_2 = __importDefault(require("../models/message"));
+var message_1 = __importDefault(require("../models/message"));
 var message_mention_1 = __importDefault(require("../models/message_mention"));
 var schema = (0, graphql_tools_1.makeExecutableSchema)({
     typeDefs: schema_1.default,
-    resolvers: message_1.default,
+    resolvers: resolver_1.default,
 });
 // 将 GraphQL API 添加到路由上
 var apolloServer = new apollo_server_koa_1.ApolloServer({
@@ -151,13 +151,14 @@ db.once('open', function () {
                         mentionedUserId = mentions[0];
                         messageMention = new message_mention_1.default({
                             userId: new mongodb_1.ObjectId(mentionedUserId),
+                            content: '',
                         });
-                        return [4 /*yield*/, messageMention.save];
+                        return [4 /*yield*/, messageMention.save()];
                     case 1:
-                        (_e.sent()) && messageMention.save();
+                        _e.sent();
                         _e.label = 2;
                     case 2:
-                        messageModel = new message_2.default({
+                        messageModel = new message_1.default({
                             senderId: new mongodb_1.ObjectId(senderId),
                             groupId: new mongodb_1.ObjectId(groupId),
                             content: content,
@@ -167,7 +168,6 @@ db.once('open', function () {
                         return [4 /*yield*/, messageModel.save()];
                     case 3:
                         _e.sent();
-                        console.log(888, messageMention, messageModel);
                         return [4 /*yield*/, group_1.default.findById(new mongodb_1.ObjectId(groupId)).exec()];
                     case 4:
                         _a = ((_e.sent()) || {}).messages, messages = _a === void 0 ? [] : _a;
@@ -176,7 +176,7 @@ db.once('open', function () {
                         _e.sent();
                         _c = (_b = io.sockets).emit;
                         _d = ['message'];
-                        return [4 /*yield*/, (0, message_1.getMessageObjList)([messageModel])];
+                        return [4 /*yield*/, (0, resolver_1.getMessageObjList)([messageModel])];
                     case 6:
                         _c.apply(_b, _d.concat([(_e.sent())[0]]));
                         return [2 /*return*/];

@@ -61,4 +61,4 @@ var MessageMentionSchema = new mongoose_1.Schema({
     userId: { type: mongoose_1.Schema.Types.ObjectId, required: true, ref: 'User' },
     content: { type: String },
 });
-exports.default = mongoose_1.default.model('MessageMentions', MessageMentionSchema);
+exports.default = mongoose_1.default.model('MessageMention', MessageMentionSchema);
